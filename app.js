@@ -5,9 +5,11 @@ import mongoose from 'mongoose';
 import cors from 'cors';
 import dotenv from 'dotenv';
 import GraphQLSchema from './graphql/schema/index';
+import isAuth from './middleware/is-auth';
+import graphQlResolvers from './graphql/resolvers/index';
+
 dotenv.config();
 
-// import graphQlResolvers from './graphql/resolvers/index.js';
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -19,11 +21,12 @@ const corsOptions = {
 app.use(cors(corsOptions));
 app.use(bodyParser.json());
 
+app.use(isAuth);
 app.use(
   '/graphql',
   graphqlHttp({
     schema: GraphQLSchema,
-    rootValue: null,
+    rootValue: graphQlResolvers,
     graphiql: true
   })
 );

@@ -9,7 +9,7 @@ type Complaint {
   department: String!
   complaint_details: String!
   createdAt: String!
-  status: Int!
+  status: String!
   upvote: Int!
   downvote: Int!
   updatedAt: String!
@@ -24,18 +24,17 @@ type Comment{
   downvote: Int!
   updatedAt: String!
   commenter: User!
+  complaint: Complaint!
 }
 
 type User {
   _id: ID!
   name: String!
-  roll_no: Int!
+  identification_number: Int!
   email: String!
 }
 
 type AuthData {
-  userId: ID!
-  roll_no : Int!
   token: String!
 }
 
@@ -62,15 +61,22 @@ input CommentInput {
 
 input UserInput {
   name : String!
-  roll_no: Int!
+  identification_number: Int!
   email: String!
   password: String!
+  role: String
+}
+
+input LogInput{
+  identification_number: Int!
+  password: String!
+  role: String
 }
 
 type RootQuery {
-    listComplaints(status: Int, userId: ID): [Complaint!]!
+    listComplaints(status: String, userId: ID): [Complaint!]!
     listComments(complaintId: ID!): [Comment!]!
-    login(roll_no: String!, password: String!): AuthData!
+    login(logInput: LogInput): AuthData!
     getFeedbackup(complaintId: ID!): Feedback!
 }
 
@@ -79,6 +85,7 @@ type RootMutation {
     createUser(userInput: UserInput): User
     createComment(commentInput: CommentInput): Comment
     upVoteComplaint(complaintId: ID!): Complaint
+    resolveComplaint(complaintId: ID!): Complaint
     downVoteComplaint(complaintId: ID!): Complaint
     upVoteComment(commentId: ID!): Comment
     downVoteComment(commentId: ID!): Comment

@@ -15,17 +15,18 @@ const complaintSchema = new mongoose.Schema({
   },
   status: {
     type: Number,
-    required: true,
-    default: 0
+    required: false,
+    enum: ['Active', 'Resolved'],
+    default: 'Active'
   },
   upvote: {
     type: Number,
-    required: true,
+    required: false,
     default: 0
   },
   downvote: {
     type: Number,
-    required: true,
+    required: false,
     default: 0
   },
   createdAt: {
@@ -35,7 +36,7 @@ const complaintSchema = new mongoose.Schema({
   },
   updatedAt: {
     type: Date,
-    required: true,
+    required: false,
     default: new Date()
   },
   complainee: {

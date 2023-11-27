@@ -5,7 +5,7 @@ const userSchema = new mongoose.Schema({
     type: String,
     required: true
   },
-  roll_no : {
+  identification_number : {
     type: BigInt,
     required: true
   },
@@ -16,7 +16,18 @@ const userSchema = new mongoose.Schema({
   password: {
     type: String,
     required: true
-  }
+  },
+  role: {
+    type: String,
+    enum: ['student', 'dean'],
+    default: 'student',
+    required: true
+  },
+  createdAt: {
+    type: Date,
+    required: false,
+    default: new Date()
+  },
 });
 
 const User = mongoose.model('User', userSchema);

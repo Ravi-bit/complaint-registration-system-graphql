@@ -1,28 +1,30 @@
 import jwt from 'jsonwebtoken';
 
-module.exports = (req, res, next) => {
-  const authHeader = req.get('Authorization');
+const isAuth = async (req, res, next) => {
+  req.isAuth = false;
+  req.isDeanAuth = false;
+  const authHeader = req.headers['Authorization'];
   if (!authHeader) {
-    req.isAuth = false;
     return next();
   }
   const token = authHeader.split(' ')[1];
   if (!token || token === '') {
-    req.isAuth = false;
     return next();
   }
   let decodedToken;
   try {
-    decodedToken = jwt.verify(token, 'somesupersecretkey');
+    decodedToken = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET);
   } catch (err) {
-    req.isAuth = false;
     return next();
   }
   if (!decodedToken) {
-    req.isAuth = false;
     return next();
   }
-  req.isAuth = true;
+  
   req.userId = decodedToken.userId;
+  req.isDeanAuth = decodedToken.role === 'dean' ? true : false;
+  req.isAuth = true;
   next();
 };
+
+export default isAuth;
