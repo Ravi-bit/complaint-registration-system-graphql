@@ -1,7 +1,6 @@
 import  bcrypt from 'bcryptjs';
-
-const Event = require('../../models/event');
-const User = require('../../models/user');
+import Complaint from '../../models/complaint';
+import User from '../../models/user';
 
 const events = async eventIds => {
   try {
@@ -33,10 +32,10 @@ const user = async userId => {
   }
 };
 
-module.exports = {
-  events: async () => {
+export default {
+  listComplaints: async args => {
     try {
-      const events = await Event.find();
+      const events = await Complaint.find();
       return events.map(event => {
         return {
           ...event._doc,

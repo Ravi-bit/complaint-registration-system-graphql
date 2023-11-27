@@ -1,8 +1,14 @@
-const mongoose = require('mongoose');
+import mongoose from 'mongoose';
 
-const Schema = mongoose.Schema;
-
-const userSchema = new Schema({
+const userSchema = new mongoose.Schema({
+  name : {
+    type: String,
+    required: true
+  },
+  roll_no : {
+    type: BigInt,
+    required: true
+  },
   email: {
     type: String,
     required: true
@@ -10,13 +16,8 @@ const userSchema = new Schema({
   password: {
     type: String,
     required: true
-  },
-  createdEvents: [
-    {
-      type: Schema.Types.ObjectId,
-      ref: 'Event'
-    }
-  ]
+  }
 });
 
-module.exports = mongoose.model('User', userSchema);
+const User = mongoose.model('User', userSchema);
+export default User;

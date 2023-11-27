@@ -4,8 +4,9 @@ import graphqlHttp from 'express-graphql';
 import mongoose from 'mongoose';
 import cors from 'cors';
 import dotenv from 'dotenv';
+import GraphQLSchema from './graphql/schema/index';
 dotenv.config();
-// import  graphQlSchema from './graphql/schema/index.js';
+
 // import graphQlResolvers from './graphql/resolvers/index.js';
 
 const app = express();
@@ -21,7 +22,7 @@ app.use(bodyParser.json());
 app.use(
   '/graphql',
   graphqlHttp({
-    schema: null,
+    schema: GraphQLSchema,
     rootValue: null,
     graphiql: true
   })
