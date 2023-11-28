@@ -10,8 +10,8 @@ type Complaint {
   complaint_details: String!
   createdAt: String!
   status: String!
-  upvote: Int!
-  downvote: Int!
+  upvotes: Int!
+  views: Int!
   updatedAt: String!
   complainee: User!
 }
@@ -20,8 +20,6 @@ type Comment{
   _id: ID!
   comment_text: String!
   createdAt: String!
-  upvote: Int!
-  downvote: Int!
   updatedAt: String!
   commenter: User!
   complaint: Complaint!
@@ -46,6 +44,12 @@ type Feedback {
   feedbacker: User!
 }
 
+type DetailComplaint{
+  complaint: Complaint!
+  upvoted: Boolean!
+  viewer: User!
+}
+
 input ComplaintInput {
   complaint_category: String!
   section: String!
@@ -57,6 +61,7 @@ input ComplaintInput {
 input CommentInput {
   comment_text: String!
   createdAt: String!
+  complaint_id: ID!
 }
 
 input UserInput {
@@ -78,6 +83,7 @@ type RootQuery {
     listComments(complaintId: ID!): [Comment!]!
     login(logInput: LogInput): AuthData!
     getFeedbackup(complaintId: ID!): Feedback!
+    viewComplaint(complaintId: ID!, userId: ID!): DetailComplaint
 }
 
 type RootMutation {
@@ -86,9 +92,6 @@ type RootMutation {
     createComment(commentInput: CommentInput): Comment
     upVoteComplaint(complaintId: ID!): Complaint
     resolveComplaint(complaintId: ID!): Complaint
-    downVoteComplaint(complaintId: ID!): Complaint
-    upVoteComment(commentId: ID!): Comment
-    downVoteComment(commentId: ID!): Comment
     createFeedback(complaintId: ID!): Feedback
 }
 

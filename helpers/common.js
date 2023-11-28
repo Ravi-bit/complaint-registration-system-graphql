@@ -1,4 +1,5 @@
 import User from '../models/user';
+import ComplaintUpvoter from '../models/complaint_upvoters';
 
 const dateToString = date => new Date(date).toISOString();
   
@@ -36,6 +37,29 @@ const transformComplaint = complaint => {
       };
 };
 
+
+const getupVoteStatus = async (cid, uid) => {
+  let upvoter = await User.findOne({
+    complaint_id : cid,
+    user_id: uid
+  });
+  return upvoter ? true: false;
+}
+
+const transformDetailComplaint = (complaint, userId) => {
+     return {
+      complaint: {
+        ...complaint._doc,
+        _id: complaint.id,
+        createdAt: dateToString(complaint._doc.createdAt),
+        updatedAt: dateToString(complaint._doc.updatedAt)
+      },
+      upvoted: getupVoteStatus(complaint.id, userId),
+      viewer: user.bind(this, userId)
+     }
+}
+
 export {
-    transformComplaint
+    transformComplaint,
+    transformDetailComplaint
 }

@@ -1,5 +1,5 @@
 import Complaint from '../../models/complaint';
-import {transformComplaint} from '../../helpers/common';
+import {transformComplaint, transformDetailComplaint} from '../../helpers/common';
 
 export default {
     createComplaint : async (args, req) => {
@@ -47,24 +47,23 @@ export default {
                 {
                     _id: complaintId,
                     status : 'Active'
-                }, {
-                    upvote:1
                 }
             );
             if (!complaint) {
                 throw new Error("Complaint doesn't exist or may be a resolved complaint")
             }
-            const result = await Complaint.updateOne(
+            let result = await Complaint.updateOne(
                 { _id: complaintId },
-                { $set: { upvote: complaint._doc.upvote++ } }
+                { $set: { upvotes: complaint._doc.upvotes++ } }
               );
+            return transformComplaint(result)
         } catch (err) {
             throw err;
         }
         
     },
 
-    downVoteComplaint: async ({ complaintId }) => {
+    viewComplaint: async ({ complaintId, userId }) => {
         if (!req.isAuth) {
             throw new Error('Unauthorized client');
         }
@@ -73,17 +72,17 @@ export default {
                 {
                     _id: complaintId,
                     status : 'Active'
-                }, {
-                    downvote:1
                 }
             );
             if (!complaint) {
                 throw new Error("Complaint doesn't exist or may be a resolved complaint")
             }
-            const result = await Complaint.updateOne(
+
+            let result = await Complaint.updateOne(
                 { _id: complaintId },
-                { $set: { downvote: complaint._doc.downvote++ } }
-              );
+                { $set: { views: complaint._doc.views++ } }
+            );
+            return transformDetailComplaint(result, userId)
         } catch (err) {
             throw err;
         }
@@ -107,10 +106,11 @@ export default {
             if (!complaint) {
                 throw new Error("Complaint doesn't exist or may be a resolved complaint")
             }
-            const result = await Complaint.updateOne(
+            let result = await Complaint.updateOne(
                 { _id: complaintId },
                 { $set: { status: 'Resolved' } }
               );
+            return transformComplaint(result)
         } catch (err) {
             throw err;
         }

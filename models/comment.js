@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 
-const eventSchema = new mongoose.Schema({
+const commentSchema = new mongoose.Schema({
   comment_text: {
     type: String,
     required: true
@@ -36,5 +36,5 @@ const eventSchema = new mongoose.Schema({
 
 });
 
-const Comment = mongoose.model('Comment', eventSchema);
+const Comment = mongoose.model('Comment', commentSchema);
 export default Comment;

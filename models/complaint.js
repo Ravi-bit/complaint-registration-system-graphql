@@ -19,12 +19,12 @@ const complaintSchema = new mongoose.Schema({
     enum: ['Active', 'Resolved'],
     default: 'Active'
   },
-  upvote: {
+  upvotes: {
     type: Number,
     required: false,
     default: 0
   },
-  downvote: {
+  views: {
     type: Number,
     required: false,
     default: 0
