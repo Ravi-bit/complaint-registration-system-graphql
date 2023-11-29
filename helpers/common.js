@@ -1,5 +1,7 @@
-import User from '../models/user';
-import ComplaintUpvoter from '../models/complaint_upvoters';
+import User from '../models/user.js';
+import ComplaintUpvoter from '../models/complaint_upvoters.js';
+import Complaint from '../models/complaint.js';
+
 
 const dateToString = date => new Date(date).toISOString();
   
@@ -25,7 +27,7 @@ const user = async userId => {
     } catch (err) {
       throw err;
     }
-  };
+};
 
 const transformComplaint = complaint => {
     return {
@@ -33,33 +35,93 @@ const transformComplaint = complaint => {
         _id: complaint.id,
         createdAt: dateToString(complaint._doc.createdAt),
         updatedAt: dateToString(complaint._doc.updatedAt),
-        complainee: user.bind(this, complaint.complainee)
+        complainee: user.bind(this, complaint._doc.complainee)
       };
+};
+
+const getComplaint = async (id, req_status = null) => {
+  let conditions = { _id: id };
+  conditions = req_status ? { ...conditions, status: req_status } : conditions;
+  let result = await Complaint.findOne(conditions);
+  return result;
+};
+
+const transformFeedback = async feedback => {
+  return {
+    ...feedback._doc,
+    _id: feedback.id,
+    createdAt: dateToString(feedback._doc.createdAt),
+    updatedAt: dateToString(feedback._doc.updatedAt),
+    feedbacker: user.bind(this, feedback._doc.feedbacker),
+    feedback_complaint: transformComplaint.bind(this, getComplaint(feedback._doc.complaint))
+  };
+};
+
+const transformComment = async (comment, cid) => {
+  let commented_complaint = getComplaint(cid);
+  return {
+    ...comment._doc,
+    _id: comment.id,
+    createdAt: dateToString(comment._doc.createdAt),
+    updatedAt: dateToString(comment._doc.updatedAt),
+    complaint: transformComment.bind(this, commented_complaint),
+  };
+};
+
+const transformCreatedComment = async (comment) => {
+  let commented_complaint = await Complaint.findOne({
+    _id: comment._doc.complaint
+  });
+  return {
+    ...comment._doc,
+    _id: comment.id,
+    createdAt: dateToString(comment._doc.createdAt),
+    updatedAt: dateToString(comment._doc.updatedAt),
+    complaint: transformComment.bind(this, commented_complaint),
+    commenter: user.bind(this, comment._doc.commenter)
+  };
 };
 
 
 const getupVoteStatus = async (cid, uid) => {
-  let upvoter = await User.findOne({
-    complaint_id : cid,
+  let upvoter = await ComplaintUpvoter.findOne({
+    complaint_id: cid,
     user_id: uid
   });
-  return upvoter ? true: false;
-}
+  return upvoter ? true : false;
+};
 
 const transformDetailComplaint = (complaint, userId) => {
-     return {
-      complaint: {
-        ...complaint._doc,
-        _id: complaint.id,
-        createdAt: dateToString(complaint._doc.createdAt),
-        updatedAt: dateToString(complaint._doc.updatedAt)
-      },
-      upvoted: getupVoteStatus(complaint.id, userId),
-      viewer: user.bind(this, userId)
-     }
-}
+  return {
+    complaint: {
+      ...complaint._doc,
+      _id: complaint.id,
+      createdAt: dateToString(complaint._doc.createdAt),
+      updatedAt: dateToString(complaint._doc.updatedAt)
+    },
+    upvoted: getupVoteStatus(complaint.id, userId),
+    viewer: user.bind(this, userId)
+  };
+};
+
+const transformResolvedComplaint = complaint => {
+  return {
+    ...complaint._doc,
+    _id: complaint.id,
+    createdAt: dateToString(complaint._doc.createdAt),
+    updatedAt: dateToString(complaint._doc.updatedAt),
+    complainee: user.bind(this, complaint._doc.complainee),
+    resolvedBy: user.bind(this, complaint._doc.resolvedBy),
+    resolvedAt: dateToString(complaint._doc.resolvedAt)
+  };
+};
 
 export {
-    transformComplaint,
-    transformDetailComplaint
-}
+  transformComplaint,
+  transformDetailComplaint,
+  transformComment,
+  transformCreatedComment,
+  getComplaint,
+  transformFeedback,
+  transformResolvedComplaint
+};

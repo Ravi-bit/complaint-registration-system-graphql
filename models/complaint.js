@@ -34,13 +34,29 @@ const complaintSchema = new mongoose.Schema({
     required: true,
     default: new Date()
   },
+  resolvement: {
+    type: String,
+    required: false,
+    default: ''
+  },
+  resolvedAt: {
+    type: Date,
+    required: false,
+    default: null
+  },
+  resolvedBy: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User',
+    required: false,
+    default: null
+  },
   updatedAt: {
     type: Date,
     required: false,
     default: new Date()
   },
   complainee: {
-      type: Schema.Types.ObjectId,
+      type: mongoose.Schema.Types.ObjectId,
       ref: 'User'
   }
 });

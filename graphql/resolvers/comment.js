@@ -1,40 +1,40 @@
-import Comment from '../../models/comment';
-import {transformComplaint, transformDetailComplaint} from '../../helpers/common';
+import Comment from '../../models/comment.js';
+import {transformComment, transformCreatedComment} from '../../helpers/common.js';
 
 export default {
-    createComment : async (args, req) => {
-        if (!req.isAuth) {
-            throw new Error('Unauthorized client');
-        } 
-        let complaint = new Comment({
-            comment_text: args.commentInput.comment_text,
-            createdAt: new Date(args.commentInput.createdAt),
-            complaint: args.commentInput.complaint_id,
-            commenter: req.userId
-        });
-        try {
-            let result = await complaint.save();
-            return transformComplaint(result);
-          } catch (err) {
-            throw err;
-          }
-    },
-
-
-    listComments: async ({ status, userId }, req) => {
-        if (!req.isAuth) {
-            throw new Error('Unauthorized client');
-        }
-        let conditions = status ? {status} : {};
-        conditions = userId ? { ...conditions, complainee: userId } : conditions;
-        try {
-          const complaints = await Complaint.find(conditions);
-          return complaints.map(complaint => {
-            return transformComplaint(complaint);
-          });
-        } catch (err) {
-          throw err;
-        }
+  createComment: async (args, req) => {
+    if (!req.isAuth) {
+      throw new Error('Unauthorized client');
     }
+    const comment = new Comment({
+      comment_text: args.commentInput.comment_text,
+      createdAt: new Date(args.commentInput.createdAt),
+      complaint: args.commentInput.complaint_id,
+      commenter: req.userId
+    });
+    try {
+      let result = await comment.save();
+      return transformCreatedComment(result);
+    } catch (err) {
+      throw err;
+    }
+  },
 
-}
+
+  listComments: async ({ complaintId }, req) => {
+    if (!req.isAuth) {
+      throw new Error('Unauthorized client');
+    }
+    try {
+      const comments = await Comment.find({
+        complaint: complaintId
+      });
+      return comments.map(comment => {
+        return transformComment(comment, complaintId);
+      });
+    } catch (err) {
+      throw err;
+    }
+  }
+
+};

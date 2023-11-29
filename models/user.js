@@ -6,7 +6,7 @@ const userSchema = new mongoose.Schema({
     required: true
   },
   identification_number : {
-    type: BigInt,
+    type: String,
     required: true
   },
   email: {

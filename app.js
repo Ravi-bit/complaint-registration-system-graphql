@@ -4,12 +4,16 @@ import graphqlHttp from 'express-graphql';
 import mongoose from 'mongoose';
 import cors from 'cors';
 import dotenv from 'dotenv';
-import GraphQLSchema from './graphql/schema/index';
-import isAuth from './middleware/is-auth';
-import graphQlResolvers from './graphql/resolvers/index';
+import GraphQLSchema from './graphql/schema/index.js';
+import isAuth from './middleware/is-auth.js';
+import { join } from 'path';
+import graphQlResolvers from './graphql/resolvers/index.js';
+import getErrorCode from './helpers/errorCode.js';
+import cookieParser from 'cookie-parser';
+
+
 
 dotenv.config();
-
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -18,18 +22,28 @@ const corsOptions = {
     origin: process.env.UI_URL || 'http://localhost:3000'
 };
 
-app.use(cors(corsOptions));
-app.use(bodyParser.json());
 
+app.use(cors(corsOptions));
+app.use(cookieParser());
+app.use(bodyParser.json());
+app.use('/', express.static(join(process.cwd(), 'public')));
 app.use(isAuth);
 app.use(
-  '/graphql',
-  graphqlHttp({
-    schema: GraphQLSchema,
-    rootValue: graphQlResolvers,
-    graphiql: true
-  })
-);
+  '/graphql', async (req, res, next) => {
+      await graphqlHttp({
+        schema: GraphQLSchema,
+        rootValue: graphQlResolvers,
+        graphiql: true,
+        formatError: (err) => {
+          const error = getErrorCode(err.message)
+          if (error.message === 'Undefined Default Error') {
+            error['detailedError'] = err
+          }
+          res.status(error.statusCode);
+          return { error };
+        }
+      })(req, res, next);
+  });
 
 const MONGO_URI = 'mongodb+srv://' + `${process.env.MONGO_USER}:${process.env.MONGO_PASSWORD}` +
   '@complaint-register-syst.r5xlti0.mongodb.net/' + `${process.env.MONGO_DB}`

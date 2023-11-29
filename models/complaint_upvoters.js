@@ -2,11 +2,11 @@ import mongoose from 'mongoose';
 
 const complaintUpvoterSchema = new mongoose.Schema({
   user_id: {
-    type: Schema.Types.ObjectId,
+    type: mongoose.Schema.Types.ObjectId,
     ref: 'User'
   },
   complaint_id: {
-      type: Schema.Types.ObjectId,
+      type: mongoose.Schema.Types.ObjectId,
       ref: 'Complaint'
   },
   createdAt: {
@@ -16,5 +16,5 @@ const complaintUpvoterSchema = new mongoose.Schema({
   }
 });
 
-const ComplaintUpvoter = mongoose.model('Complaint', complaintUpvoterSchema);
+const ComplaintUpvoter = mongoose.model('ComplaintUpvoter', complaintUpvoterSchema);
 export default ComplaintUpvoter;

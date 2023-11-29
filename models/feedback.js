@@ -1,4 +1,4 @@
-const mongoose = require('mongoose');
+import mongoose from 'mongoose';
 
 const feedbackSchema = new mongoose.Schema({
   feedback_text: {
@@ -16,11 +16,11 @@ const feedbackSchema = new mongoose.Schema({
     default: new Date()
   },
   complaint: {
-      type: Schema.Types.ObjectId,
+      type: mongoose.Schema.Types.ObjectId,
       ref: 'Complaint'
   },
   feedbacker: {
-    type: Schema.Types.ObjectId,
+    type: mongoose.Schema.Types.ObjectId,
     ref: 'User'
 }
 
