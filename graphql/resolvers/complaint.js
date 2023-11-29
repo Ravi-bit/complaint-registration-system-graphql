@@ -1,14 +1,18 @@
 import Complaint from '../../models/complaint.js';
-import {transformComplaint, transformDetailComplaint, transformResolvedComplaint} from '../../helpers/common.js';
+import ComplaintUpvoter from '../../models/complaint_upvoters.js';
+import {transformComplaint, transformDetailComplaint, transformResolvedComplaint, getupVoteStatus} from '../../helpers/common.js';
+import { errorNames } from '../../helpers/errorConstants.js';
+
 
 export default {
     createComplaint: async (args, req) => {
         if (!req.isAuth) {
-            throw new Error('Unauthorized client');
+            throw new Error(errorNames.UNAUTHORIZED_CLIENT); 
         }
         const complaint = new Complaint({
             complaint_category: args.complaintInput.complaint_category,
             section: args.complaintInput.section,
+            department: args.complaintInput.department,
             complaint_details: args.complaintInput.complaint_details,
             createdAt: new Date(args.complaintInput.createdAt),
             complainee: req.userId
@@ -23,7 +27,7 @@ export default {
 
     listComplaints: async ({ status, userId }, req) => {
         if (!req.isAuth) {
-            throw new Error('Unauthorized client');
+            throw new Error(errorNames.UNAUTHORIZED_CLIENT); 
         }
         let conditions = status ? { status } : {};
         conditions = userId ? { ...conditions, complainee: userId } : conditions;
@@ -39,7 +43,7 @@ export default {
 
     upVoteComplaint: async ({ complaintId }, req) => {
         if (!req.isAuth) {
-            throw new Error('Unauthorized client');
+            throw new Error(errorNames.UNAUTHORIZED_CLIENT); 
         }
         try {
             let complaint = await Complaint.findOne(
@@ -49,11 +53,26 @@ export default {
                 }
             );
             if (!complaint) {
-                throw new Error("Complaint doesn't exist or may be a resolved complaint");
+                throw new Error(errorNames.INVALID_COMPLAINT);
             }
-            let result = await Complaint.updateOne(
+
+            const isUpvoted =await getupVoteStatus(complaintId, req.userId);
+            if(isUpvoted){
+                throw new Error(errorNames.ALREADY_UPVOTED);
+            }
+            if(complaint.complainee == req.userId){
+                throw new Error(errorNames.UPVOTE_NOT_ALLOWED);
+            }
+            let result = await Complaint.findByIdAndUpdate(
                 { _id: complaintId },
-                { $set: { upvotes: complaint._doc.upvotes++ } });
+                { $set: { upvotes: ++complaint._doc.upvotes } },
+                { new: true });
+            
+            const upvoter = new ComplaintUpvoter({
+                user_id : req.userId,
+                complaint_id: complaintId
+            });
+            const stored = await upvoter.save();
             return transformComplaint(result);
         } catch (err) {
             throw err;
@@ -63,22 +82,23 @@ export default {
 
     viewComplaint: async ({ complaintId, userId }, req) => {
         if (!req.isAuth) {
-            throw new Error('Unauthorized client');
+            throw new Error(errorNames.UNAUTHORIZED_CLIENT); 
         }
         try {
             let complaint = await Complaint.findOne(
                 {
-                    _id: complaintId,
-                    status: 'Active'
+                    _id: complaintId
                 }
             );
             if (!complaint) {
-                throw new Error("Complaint doesn't exist or may be a resolved complaint");
+                throw new Error(errorNames.INVALID_COMPLAINT);    
             }
 
-            let result = await Complaint.updateOne(
+            let result = await Complaint.findByIdAndUpdate(
                 { _id: complaintId },
-                { $set: { views: complaint._doc.views++ } });
+                { $set: { views: ++complaint._doc.views } },
+                { new: true });
+
             return transformDetailComplaint(result, userId);
         } catch (err) {
             throw err;
@@ -88,7 +108,7 @@ export default {
 
     resolveComplaint: async (args, req) => {
         if (!req.isDeanAuth) {
-            throw new Error('Unauthorized dean to perform the operation');
+            throw new Error(errorNames.UNAUTHORIZED_DEAN); 
         }
         let new_text = args.resolveInput.resolveText ? args.resolveInput.resolveText : '';
         try {
@@ -101,9 +121,9 @@ export default {
             }
             );
             if (!complaint) {
-                throw new Error("Complaint doesn't exist or may be a resolved complaint")
+                throw new Error(errorNames.INVALID_COMPLAINT);
             }
-            let result = await Complaint.updateOne(
+            let result = await Complaint.findByIdAndUpdate(
                 { _id: args.resolveInput.complaintId },
                 {
                     $set: {
@@ -112,12 +132,12 @@ export default {
                         resolvedAt: new Date(args.resolveInput.resolvedAt),
                         resolvedBy: req.userId
                     }
-                }
+                },
+                { new: true }
             );
             return transformResolvedComplaint(result);
         } catch (err) {
             throw err;
         }
     }
-
 };

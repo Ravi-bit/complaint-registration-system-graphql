@@ -55,7 +55,7 @@ type CreatedComment{
 type User {
   _id: ID!
   name: String!
-  identification_number: String!
+  identification_num: String!
   email: String!
 }
 
@@ -106,14 +106,14 @@ input ResolveInput {
 
 input UserInput {
   name : String!
-  identification_number: String!
+  identification_num: String!
   email: String!
   password: String!
   role: String
 }
 
 input LogInput{
-  identification_number: String!
+  identification_num: String!
   password: String!
   role: String
 }

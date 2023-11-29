@@ -9,7 +9,7 @@ export default {
       const existingUser = await User.findOne({
         $or: [
           { email: args.userInput.email },
-          { identification_number: args.userInput.identification_number }
+          { identification_num: args.userInput.identification_num }
         ]
       });
       if (existingUser) {
@@ -19,7 +19,7 @@ export default {
         
       let user_options = {
         name: args.userInput.name,
-        identification_number: args.userInput.identification_number,
+        identification_num: args.userInput.identification_num,
         email: args.userInput.email,
         password: hashedPassword
       };
@@ -33,7 +33,7 @@ export default {
         return {
             name: result._doc.name,
             _id: result.id,
-            identification_number: result._doc.identification_number,
+            identification_num: result._doc.identification_num,
             email: result._doc.email
         };
     } catch (err) {
@@ -46,7 +46,7 @@ export default {
                         ? 'student' : 'dean';
       const user = await User.findOne(
           {
-              identification_number: args.logInput.identification_number,
+              identification_num: args.logInput.identification_num,
               role: input_role
           }
       );
@@ -61,7 +61,7 @@ export default {
           {
               userId: user.id,
               email: user.email,
-              identification_number: user.identification_number,
+              identification_num: user.identification_num,
               role: user.role
           },
       process.env.ACCESS_TOKEN_SECRET,
@@ -69,7 +69,7 @@ export default {
           expiresIn: '1h'
       }
       );
-      req.res.cookie('secret-token', token , { maxAge: 60 * 60 * 1000, httpOnly: true });
+      req.res.cookie('secretToken', token , { maxAge: process.env.COOKIE_MAX_AGE, httpOnly: true });
       return { token };
   }
 };

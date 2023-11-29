@@ -1,17 +1,19 @@
 import Feedback from '../../models/feedback.js';
 import {getComplaint, transformFeedback} from '../../helpers/common.js';
+import { errorNames } from '../../helpers/errorConstants.js';
+
 
 export default {
     createFeedback: async (args, req) => {
         if (!req.isAuth) {
-            throw new Error('Unauthorized client');
+            throw new Error(errorNames.UNAUTHORIZED_CLIENT); 
         }
         let req_complaint = getComplaint(args.feedbackInput.complaint_id, 'Resolved');
         if (!req_complaint) {
-            throw new Error('Complaint is not yet resolved');
+            throw new Error(errorNames.UNRESOLVED_COMPLAINT);
         }
         if (req_complaint.complainee != req.userId) {
-            throw new Error('You are not authorized to give feedback');
+            throw new Error(errorNames.FEEDBACK_UNAUTH);
         }
         try {
             let exist_feedback = await Feedback.findOne({
@@ -19,7 +21,7 @@ export default {
                 feedbacker: req.userId
             });
             if (exist_feedback) {
-                throw new Error('Feedback already exists on this complaint');
+                throw new Error(errorNames.FEEDBACK_EXIST);
             }
             const feedback = new Feedback({
                 feedback_text: args.feedbackInput.feedback_text,
@@ -35,16 +37,16 @@ export default {
     },
 
 
-    getFeedbackup: async ({ complaintId }, req) => {
+    getFeedback: async ({ complaintId }, req) => {
         if (!req.isAuth) {
-            throw new Error('Unauthorized client');
+            throw new Error(errorNames.UNAUTHORIZED_CLIENT); 
         }
         let req_complaint = getComplaint(complaintId, 'Resolved');
         if (!req_complaint) {
-            throw new Error('Complaint is not yet resolved');
+            throw new Error(errorNames.UNRESOLVED_COMPLAINT);
         }
-        if (req_complaint.complainee != req.userId) {
-            throw new Error('You are not authorized to give feedback');
+        if (!req.isDeanAuth) {
+            throw new Error(errorNames.FEEDBACK_UNAUTH);
         }
         try {
             let feedback = await Feedback.findOne({

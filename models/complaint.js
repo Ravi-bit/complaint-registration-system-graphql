@@ -9,12 +9,16 @@ const complaintSchema = new mongoose.Schema({
     type: String,
     required: true
   },
+  department: {
+    type: String,
+    required: true
+  },
   complaint_details: {
     type: String,
     required: true
   },
   status: {
-    type: Number,
+    type: String,
     required: false,
     enum: ['Active', 'Resolved'],
     default: 'Active'

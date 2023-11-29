@@ -10,6 +10,7 @@ import { join } from 'path';
 import graphQlResolvers from './graphql/resolvers/index.js';
 import getErrorCode from './helpers/errorCode.js';
 import cookieParser from 'cookie-parser';
+import { errorTypes } from './helpers/errorConstants.js';
 
 
 
@@ -36,7 +37,7 @@ app.use(
         graphiql: true,
         formatError: (err) => {
           const error = getErrorCode(err.message)
-          if (error.message === 'Undefined Default Error') {
+          if (error.message === errorTypes.DEFAULT.message) {
             error['detailedError'] = err
           }
           res.status(error.statusCode);
