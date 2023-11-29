@@ -8,7 +8,7 @@ export default {
         if (!req.isAuth) {
             throw new Error(errorNames.UNAUTHORIZED_CLIENT); 
         }
-        let req_complaint = getComplaint(args.feedbackInput.complaint_id, 'Resolved');
+        let req_complaint = await getComplaint(args.feedbackInput.complaint_id, 'Resolved');
         if (!req_complaint) {
             throw new Error(errorNames.UNRESOLVED_COMPLAINT);
         }
@@ -25,7 +25,7 @@ export default {
             }
             const feedback = new Feedback({
                 feedback_text: args.feedbackInput.feedback_text,
-                createdAt: new Date(args.feedbackInput.createdAt),
+                createdAt: new Date(),
                 complaint: args.feedbackInput.complaint_id,
                 feedbacker: req.userId
             });
@@ -41,7 +41,7 @@ export default {
         if (!req.isAuth) {
             throw new Error(errorNames.UNAUTHORIZED_CLIENT); 
         }
-        let req_complaint = getComplaint(complaintId, 'Resolved');
+        let req_complaint = await getComplaint(complaintId, 'Resolved');
         if (!req_complaint) {
             throw new Error(errorNames.UNRESOLVED_COMPLAINT);
         }
@@ -50,9 +50,9 @@ export default {
         }
         try {
             let feedback = await Feedback.findOne({
-                complaint: complaintId,
-                feedbacker: req.userId
+                complaint: complaintId
             });
+            console.log(feedback);
             return transformFeedback(feedback);
         } catch (err) {
             throw err;

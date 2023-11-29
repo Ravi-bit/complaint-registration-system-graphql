@@ -8,12 +8,12 @@ const feedbackSchema = new mongoose.Schema({
   createdAt: {
     type: Date,
     required: true,
-    default: new Date()
+    default: null
   },
   updatedAt: {
     type: Date,
-    required: true,
-    default: new Date()
+    required: false,
+    default: null
   },
   complaint: {
       type: mongoose.Schema.Types.ObjectId,

@@ -14,7 +14,7 @@ type Complaint {
   resolvement: String
   resolvedBy: User
   resolvedAt: String
-  updatedAt: String!
+  updatedAt: String
   complainee: User!
 }
 
@@ -31,7 +31,7 @@ type ResolvedComplaint {
   resolvement: String
   resolvedBy: User!
   resolvedAt: String!
-  updatedAt: String!
+  updatedAt: String
   complainee: User!
 }
 
@@ -39,18 +39,11 @@ type Comment{
   _id: ID!
   comment_text: String!
   createdAt: String!
-  updatedAt: String!
+  updatedAt: String
   complaint: Complaint!
+  commenter: User!
 }
 
-type CreatedComment{
-  _id: ID!
-  comment_text: String!
-  createdAt: String!
-  updatedAt: String!
-  commenter: User!
-  complaint: Complaint!
-}
 
 type User {
   _id: ID!
@@ -67,7 +60,7 @@ type Feedback {
   _id: ID!
   feedback_text: String!
   createdAt: String!
-  updatedAt: String!
+  updatedAt: String
   feedbacker: User!
   feedback_complaint: Complaint!
 }
@@ -83,25 +76,21 @@ input ComplaintInput {
   section: String!
   department: String!
   complaint_details: String!
-  createdAt: String!
 }
 
 input CommentInput {
   comment_text: String!
-  createdAt: String!
   complaint_id: ID!
 }
 
 input FeedbackupInput {
   feedback_text: String!
-  createdAt: String!
   complaint_id: ID!
 }
 
 input ResolveInput {
   resolveText: String
   complaintId: ID!
-  resolvedAt: String!
 }
 
 input UserInput {
@@ -122,14 +111,14 @@ type RootQuery {
     listComplaints(status: String, userId: ID): [Complaint!]!
     listComments(complaintId: ID!): [Comment!]!
     login(logInput: LogInput): AuthData!
-    getFeedbackup(complaintId: ID!): Feedback!
+    getFeedback(complaintId: ID!): Feedback!
     viewComplaint(complaintId: ID!, userId: ID!): DetailComplaint
 }
 
 type RootMutation {
     createComplaint(complaintInput: ComplaintInput): Complaint
     createUser(userInput: UserInput): User
-    createComment(commentInput: CommentInput): CreatedComment
+    createComment(commentInput: CommentInput): Comment
     upVoteComplaint(complaintId: ID!): Complaint
     resolveComplaint(resolveInput: ResolveInput): ResolvedComplaint
     createFeedback(feedbackInput: FeedbackupInput!): Feedback

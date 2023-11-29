@@ -21,7 +21,8 @@ export default {
         name: args.userInput.name,
         identification_num: args.userInput.identification_num,
         email: args.userInput.email,
-        password: hashedPassword
+        password: hashedPassword,
+        createdAt: new Date()
       };
 
       if (args.userInput?.role && args.userInput.role === 'dean') {

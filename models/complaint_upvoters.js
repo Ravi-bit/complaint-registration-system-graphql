@@ -12,7 +12,7 @@ const complaintUpvoterSchema = new mongoose.Schema({
   createdAt: {
     type: Date,
     required: false,
-    default: new Date()
+    default: null
   }
 });
 

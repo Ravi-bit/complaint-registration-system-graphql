@@ -44,9 +44,6 @@ const getComplaint = async (id, req_status = null) => {
   let conditions = { _id: id };
   conditions = req_status ? { ...conditions, status: req_status } : conditions;
   let result = await Complaint.findOne(conditions);
-  if (!result) {
-    throw new Error(errorNames.INVALID_COMPLAINT);
-  }
   return result;
 };
 
@@ -57,29 +54,17 @@ const transformFeedback = async feedback => {
     createdAt: dateToString(feedback._doc.createdAt),
     updatedAt: dateToString(feedback._doc.updatedAt),
     feedbacker: user.bind(this, feedback._doc.feedbacker),
-    feedback_complaint: transformComplaint.bind(this, getComplaint(feedback._doc.complaint))
+    feedback_complaint: transformComplaint.bind(this, await getComplaint(feedback._doc.complaint))
   };
 };
 
-const transformComment = async (comment, cid) => {
-  let commented_complaint = getComplaint(cid);
+const transformComment = async (comment, commented_complaint = null) => {
   return {
     ...comment._doc,
     _id: comment.id,
     createdAt: dateToString(comment._doc.createdAt),
     updatedAt: dateToString(comment._doc.updatedAt),
-    complaint: transformComplaint.bind(this, commented_complaint),
-  };
-};
-
-const transformCreatedComment = async (comment) => {
-  let commented_complaint = getComplaint(comment._doc.complaint);
-  return {
-    ...comment._doc,
-    _id: comment.id,
-    createdAt: dateToString(comment._doc.createdAt),
-    updatedAt: dateToString(comment._doc.updatedAt),
-    complaint: transformComplaint.bind(this, commented_complaint),
+    complaint: commented_complaint ?? transformComplaint.bind(this, await getComplaint(comment._doc.complaint)),
     commenter: user.bind(this, comment._doc.commenter)
   };
 };
@@ -122,7 +107,6 @@ export {
   transformComplaint,
   transformDetailComplaint,
   transformComment,
-  transformCreatedComment,
   getComplaint,
   transformFeedback,
   transformResolvedComplaint,

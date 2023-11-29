@@ -14,7 +14,7 @@ export default {
             section: args.complaintInput.section,
             department: args.complaintInput.department,
             complaint_details: args.complaintInput.complaint_details,
-            createdAt: new Date(args.complaintInput.createdAt),
+            createdAt: new Date(),
             complainee: req.userId
         });
         try {
@@ -70,7 +70,8 @@ export default {
             
             const upvoter = new ComplaintUpvoter({
                 user_id : req.userId,
-                complaint_id: complaintId
+                complaint_id: complaintId, 
+                createdAt: new Date()
             });
             const stored = await upvoter.save();
             return transformComplaint(result);
@@ -129,7 +130,7 @@ export default {
                     $set: {
                         status: 'Resolved',
                         resolvement: new_text,
-                        resolvedAt: new Date(args.resolveInput.resolvedAt),
+                        resolvedAt: new Date(),
                         resolvedBy: req.userId
                     }
                 },

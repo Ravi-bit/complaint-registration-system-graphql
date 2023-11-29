@@ -36,7 +36,7 @@ const complaintSchema = new mongoose.Schema({
   createdAt: {
     type: Date,
     required: true,
-    default: new Date()
+    default: null
   },
   resolvement: {
     type: String,
@@ -57,7 +57,7 @@ const complaintSchema = new mongoose.Schema({
   updatedAt: {
     type: Date,
     required: false,
-    default: new Date()
+    default: null
   },
   complainee: {
       type: mongoose.Schema.Types.ObjectId,
