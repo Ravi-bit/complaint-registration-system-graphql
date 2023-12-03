@@ -36,12 +36,13 @@ app.use(
         rootValue: graphQlResolvers,
         graphiql: true,
         formatError: (err) => {
+          console.log(err)
           const error = getErrorCode(err.message)
           if (error.message === errorTypes.DEFAULT.message) {
             error['detailedError'] = err
           }
           res.status(error.statusCode);
-          return { error };
+          return { error, message : error.message };
         }
       })(req, res, next);
   });

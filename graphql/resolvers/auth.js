@@ -70,7 +70,11 @@ export default {
           expiresIn: '1h'
       }
       );
-      req.res.cookie('secretToken', token , { maxAge: process.env.COOKIE_MAX_AGE, httpOnly: true });
-      return { token };
+      req.res.cookie('secretToken', token , { maxAge: process.env.COOKIE_MAX_AGE, httpOnly: false });
+      return {
+        userId: user.id,
+        role: user.role,
+        token
+      };
   }
 };

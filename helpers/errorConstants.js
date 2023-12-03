@@ -25,23 +25,23 @@ const errorTypes = {
     },
     INNCORRECT_ACCOUNT: {
       message: "Account couldn't be found.",
-      statusCode: 404
+      statusCode: 200
     },
     INNCORRECT_PASSWORD: {
       message: "Wrong Password",
-      statusCode: 400
+      statusCode: 200
     },
     UNAUTHORIZED_CLIENT: {
       message: "Unauthorized client in the scope",
-      statusCode: 401
+      statusCode: 200
     },
     UNAUTHORIZED_DEAN: {
       message: "Unauthorized dean to perform this operation. Please log in as Dean.",
-      statusCode: 403
+      statusCode: 200
     },
     INVALID_COMPLAINT: {
       message: "Complaint doesn't exist or may be a resolved complaint.",
-      statusCode: 404
+      statusCode: 200
     },
     INVALID_USER: {
       message: "User Couldn't be found",
@@ -49,23 +49,23 @@ const errorTypes = {
     },
     UNRESOLVED_COMPLAINT: {
       message: "Complaint is not yet resolved to give/view the feedback.",
-      statusCode: 400
+      statusCode: 200
     },
     UPVOTE_NOT_ALLOWED: {
       message: "You are not allowed to upvoted this complaint",
-      statusCode: 403
+      statusCode: 200
     },
     FEEDBACK_EXIST: {
       message: "Feedback already exists on this complaint",
-      statusCode: 400
+      statusCode: 200
     },
     ALREADY_UPVOTED: {
       message: "You already upvoted this complaint",
-      statusCode: 403
+      statusCode: 200
     },
     FEEDBACK_UNAUTH: {
       message: "You are not authorized to give/view the feedback. Please log in as Dean or Complainee.",
-      statusCode: 403
+      statusCode: 200
     },
     DEFAULT: {
       message: 'Undefined Default Error',

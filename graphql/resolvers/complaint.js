@@ -33,6 +33,8 @@ export default {
         conditions = userId ? { ...conditions, complainee: userId } : conditions;
         try {
             const complaints = await Complaint.find(conditions);
+            const sleep = (delay) => new Promise((resolve) => setTimeout(resolve, delay))
+            await sleep(4000)
             return complaints.map(complaint => {
                 return transformComplaint(complaint);
             });
@@ -99,7 +101,8 @@ export default {
                 { _id: complaintId },
                 { $set: { views: ++complaint._doc.views } },
                 { new: true });
-
+                const sleep = (delay) => new Promise((resolve) => setTimeout(resolve, delay))
+                await sleep(2000)
             return transformDetailComplaint(result, userId);
         } catch (err) {
             throw err;

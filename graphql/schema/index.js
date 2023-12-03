@@ -54,6 +54,8 @@ type User {
 
 type AuthData {
   token: String!
+  userId: String!
+  role: String!
 }
 
 type Feedback {
