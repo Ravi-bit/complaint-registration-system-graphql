@@ -110,6 +110,34 @@ export default {
         
     },
 
+    viewResolvedComplaint: async ({ complaintId, userId }, req) => {
+        if (!req.isAuth) {
+            throw new Error(errorNames.UNAUTHORIZED_CLIENT); 
+        }
+        try {
+            let complaint = await Complaint.findOne(
+                {
+                    _id: complaintId
+                }
+            );
+            if (!complaint) {
+                throw new Error(errorNames.INVALID_COMPLAINT);    
+            }
+
+            let result = await Complaint.findByIdAndUpdate(
+                { _id: complaintId },
+                { $set: { views: ++complaint._doc.views } },
+                { new: true });
+            
+                const sleep = (delay) => new Promise((resolve) => setTimeout(resolve, delay))
+                await sleep(2000)
+            return transformResolvedComplaint(result);
+        } catch (err) {
+            throw err;
+        }
+        
+    },
+
     resolveComplaint: async (args, req) => {
         if (!req.isDeanAuth) {
             throw new Error(errorNames.UNAUTHORIZED_DEAN); 

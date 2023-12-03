@@ -115,6 +115,7 @@ type RootQuery {
     login(logInput: LogInput): AuthData!
     getFeedback(complaintId: ID!): Feedback!
     viewComplaint(complaintId: ID!, userId: ID!): DetailComplaint
+    viewResolvedComplaint(complaintId: ID!, userId: ID!): ResolvedComplaint
 }
 
 type RootMutation {
